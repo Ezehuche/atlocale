@@ -11,7 +11,7 @@
     "prepublishOnly": "tsc"
   },
   "author": {
-    "name": "Leo Bernard",
+    "name": "Ezeokeke Uchenna",
     "url": "https://leolabs.org"
   },
   "keywords": [
@@ -41,6 +41,7 @@
     "flattenjs": "^2.0.0",
     "html-entities": "^2.3.2",
     "inquirer": "^7.3.3",
+    "js-yaml": "^4.1.0",
     "lodash": "^4.17.20",
     "messageformat-parser": "^4.1.3",
     "ncp": "^2.0.0",

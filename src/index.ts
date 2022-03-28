@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk';
-import commander from 'commander';
+import { Command } from 'commander';
 import * as flatten from 'flattenjs';
 import * as fs from 'fs';
 import { omit } from 'lodash';
@@ -22,8 +22,10 @@ import {
 import { matcherMap } from './matchers';
 
 require('dotenv').config();
+const program = new Command();
+const options = program.opts();
 
-commander
+program
   .option(
     '-i, --input <inputDir>',
     'the directory containing language directories',
@@ -368,30 +370,30 @@ const translate = async (
   }
 };
 
-if (commander.listServices) {
+if (options.listServices) {
   console.log('Available services:');
   console.log(Object.keys(serviceMap).join(', '));
   process.exit(0);
 }
 
-if (commander.listMatchers) {
+if (options.listMatchers) {
   console.log('Available matchers:');
   console.log(Object.keys(matcherMap).join(', '));
   process.exit(0);
 }
 
 translate(
-  commander.input,
-  commander.cacheDir,
-  commander.sourceLanguage,
-  commander.deleteUnusedStrings,
-  commander.type,
-  commander.directoryStructure,
-  commander.fixInconsistencies,
-  commander.service,
-  commander.matcher,
-  commander.decodeEscapes,
-  commander.config,
+  options.input,
+  options.cacheDir,
+  options.sourceLanguage,
+  options.deleteUnusedStrings,
+  options.type,
+  options.directoryStructure,
+  options.fixInconsistencies,
+  options.service,
+  options.matcher,
+  options.decodeEscapes,
+  options.config,
 ).catch((e: Error) => {
   console.log();
   console.log(chalk.bgRed('An error has occurred:'));
