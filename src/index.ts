@@ -8,6 +8,7 @@ import { omit } from 'lodash';
 import * as path from 'path';
 import { diff } from 'deep-object-diff';
 import ncp from 'ncp';
+import fse from 'fs-extra';
 
 import { serviceMap, TranslationService } from './services';
 import {
@@ -98,6 +99,7 @@ const translate = async (
   const resolvedCacheDir = path.resolve(process.cwd(), cacheDir);
   const availableLanguages = getAvailableLanguages(workingDir, dirStructure);
   const targetLanguages = availableLanguages.filter((f) => f !== sourceLang);
+  const sourceDir = path.resolve(process.cwd(), 'locales.json');
 
   if (!fs.existsSync(resolvedCacheDir)) {
     fs.mkdirSync(resolvedCacheDir);
