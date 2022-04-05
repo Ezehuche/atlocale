@@ -34,7 +34,7 @@
     "@aws-sdk/client-translate": "^3.56.0",
     "@google-cloud/translate": "^6.3.1",
     "@types/node": "^14.11.2",
-    "chalk": "^5.0.1",
+    "chalk": "^4.1.0",
     "commander": "^9.1.0",
     "deep-object-diff": "^1.1.0",
     "dotenv": "^8.2.0",
@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
+    "@types/fs-extra": "^9.0.13",
     "@types/inquirer": "^7.3.1",
     "@types/jest": "^26.0.14",
     "@types/js-yaml": "^4.0.5",

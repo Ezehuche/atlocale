@@ -19,6 +19,7 @@ import {
   FileType,
   DirectoryStructure,
   TranslatableFile,
+  fileJSON,
 } from './util/file-system';
 import { matcherMap } from './matchers';
 
@@ -95,14 +96,32 @@ const translate = async (
   decodeEscapes = false,
   config?: string,
 ) => {
-  const workingDir = path.resolve(process.cwd(), inputDir);
   const resolvedCacheDir = path.resolve(process.cwd(), cacheDir);
+  const localeDir = path.resolve(process.cwd(), resolvedCacheDir);
+  let locales: fileJSON = {};
+
+  if (fs.existsSync(`${localeDir}/locales.json`)) {
+    locales = fse.readJsonSync(`${localeDir}/locales.json`);
+  }
+  const workingDir = path.resolve(process.cwd(), inputDir);
   const availableLanguages = getAvailableLanguages(workingDir, dirStructure);
   const targetLanguages = availableLanguages.filter((f) => f !== sourceLang);
-  const sourceDir = path.resolve(process.cwd(), 'locales.json');
 
   if (!fs.existsSync(resolvedCacheDir)) {
     fs.mkdirSync(resolvedCacheDir);
+    const obj = {
+      'sourceLang': 'en',
+      'targetLangs': [],
+      'service': 'google-translate',
+      'matcher': 'icu',
+      'config': '',
+      'fileType': 'auto',
+      'dirStructure': 'default',
+      'decodeEscapes': false,
+    };
+    const json = JSON.stringify(obj);
+
+    fs.writeFileSync(`${localeDir}/locales.json`, json);
     console.log(`🗂 Created the cache directory.`);
   }
 

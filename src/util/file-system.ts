@@ -13,6 +13,10 @@ export interface TranslatableFile {
   content: object,
 }
 
+export interface fileJSON {
+  [key: string]: string;
+}
+
 export const getAvailableLanguages = (directory: string, directoryStructure: DirectoryStructure) => {
   const directoryContent = fs.readdirSync(directory);
 
