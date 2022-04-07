@@ -71,11 +71,14 @@ export class GoogleTranslate implements TranslationService {
           value,
           this.interpolationMatcher,
         );
+        console.log(clean);
+        console.log(this.cleanLanguageCode(from));
 
         const [translationResult] = await this.translate.translate(clean, {
           from: this.cleanLanguageCode(from),
           to: this.cleanLanguageCode(to),
         });
+        console.log(translationResult);
 
         return {
           key: key,

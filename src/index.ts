@@ -19,7 +19,7 @@ import {
   FileType,
   DirectoryStructure,
   TranslatableFile,
-  fileJSON,
+  JSONValue,
 } from './util/file-system';
 import { matcherMap } from './matchers';
 
@@ -31,34 +31,34 @@ program
   .option(
     '-i, --input <inputDir>',
     'the directory containing language directories',
-    '.',
+    // '.',
   )
   .option(
     '--cache <cacheDir>',
     'set the cache directory',
-    '.json-autotranslate-cache',
+    '.atlocale',
   )
   .option(
     '-l, --source-language <sourceLang>',
     'specify the source language',
-    'en',
+    // 'en',
   )
   .option(
     '-t, --type <key-based|natural|auto>',
     `specify the file structure type`,
     /^(key-based|natural|auto)$/,
-    'auto',
+    // 'auto',
   )
   .option(
     '-s, --service <service>',
     `selects the service to be used for translation`,
-    'google-translate',
+    // 'google-translate',
   )
   .option('--list-services', `outputs a list of available services`)
   .option(
     '-m, --matcher <matcher>',
     `selects the matcher to be used for interpolations`,
-    'icu',
+    // 'icu',
   )
   .option('--list-matchers', `outputs a list of available matchers`)
   .option(
@@ -84,25 +84,36 @@ program
   .parse(process.argv);
 
 const translate = async (
-  inputDir: string = '.',
-  cacheDir: string = '.json-autotranslate-cache',
-  sourceLang: string = 'en',
+  inputDir: string,
+  cacheDir: string = '.atlocale',
+  sourceLang: string,
   deleteUnusedStrings = false,
-  fileType: FileType = 'auto',
-  dirStructure: DirectoryStructure = 'default',
+  fileType: FileType,
+  dirStructure: DirectoryStructure,
   fixInconsistencies = false,
-  service: keyof typeof serviceMap = 'google-translate',
-  matcher: keyof typeof matcherMap = 'icu',
+  service: keyof typeof serviceMap,
+  matcher: keyof typeof matcherMap,
   decodeEscapes = false,
   config?: string,
 ) => {
   const resolvedCacheDir = path.resolve(process.cwd(), cacheDir);
   const localeDir = path.resolve(process.cwd(), resolvedCacheDir);
-  let locales: fileJSON = {};
+  let locales: JSONValue = {};
 
   if (fs.existsSync(`${localeDir}/locales.json`)) {
     locales = fse.readJsonSync(`${localeDir}/locales.json`);
   }
+  inputDir = inputDir || locales['inputDir'];
+  dirStructure = dirStructure || locales['dirStructure'] as DirectoryStructure;
+  fileType = fileType || locales['fileType'] as FileType;
+  sourceLang = sourceLang || locales['sourceLang'] as string;
+  service = service || locales['service'] as keyof typeof serviceMap;
+  matcher = matcher || locales['matcher'] as keyof typeof matcherMap;
+  config = config || locales['config'] as string ;
+  decodeEscapes = decodeEscapes || locales['decodeEscapes'] as boolean;
+  console.log(inputDir);
+  console.log(dirStructure);
+  console.log(matcher);
   const workingDir = path.resolve(process.cwd(), inputDir);
   const availableLanguages = getAvailableLanguages(workingDir, dirStructure);
   const targetLanguages = availableLanguages.filter((f) => f !== sourceLang);
@@ -119,7 +130,7 @@ const translate = async (
       'dirStructure': 'default',
       'decodeEscapes': false,
     };
-    const json = JSON.stringify(obj);
+    const json = JSON.stringify(obj, null, 2) + '\n';
 
     fs.writeFileSync(`${localeDir}/locales.json`, json);
     console.log(`🗂 Created the cache directory.`);

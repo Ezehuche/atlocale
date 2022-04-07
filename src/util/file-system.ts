@@ -13,9 +13,13 @@ export interface TranslatableFile {
   content: object,
 }
 
-export interface fileJSON {
-  [key: string]: string;
-}
+export type JSONValue =
+    | string
+    | number
+    | boolean
+    | { [x: string]: JSONValue }
+    | Array<JSONValue>;
+
 
 export const getAvailableLanguages = (directory: string, directoryStructure: DirectoryStructure) => {
   const directoryContent = fs.readdirSync(directory);
