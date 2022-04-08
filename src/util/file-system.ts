@@ -9,17 +9,17 @@ export type DirectoryStructure = 'default' | 'ngx-translate';
 export type TSet = Map<string, string | null>;
 
 export interface TranslatableFile {
-  name: string,
-  originalContent: string,
-  type: FileType,
-  content: object,
+  name: string;
+  originalContent: string;
+  type: FileType;
+  content: object;
 }
 
 const fileFormatMap = {
   yaml: null,
   po: null,
   xml: null,
-  "ios-strings": null,
+  'ios-strings': null,
   arb: null,
   csv: null,
 };
@@ -47,33 +47,43 @@ export interface TFileFormat {
 }
 
 export type JSONValue =
-    | string
-    | number
-    | boolean
-    | { [x: string]: JSONValue }
-    | Array<JSONValue>;
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSONValue }
+  | Array<JSONValue>;
 
+export function stringifyJson(obj: unknown): string {
+  return JSON.stringify(obj, null, 2);
+}
 
-export const getAvailableLanguages = (directory: string, directoryStructure: DirectoryStructure) => {
+export function mapToObject(map: Map<string, unknown>): unknown {
+  return [...map];
+}
+
+export const getAvailableLanguages = (
+  directory: string,
+  directoryStructure: DirectoryStructure,
+) => {
   const directoryContent = fs.readdirSync(directory);
 
   switch (directoryStructure) {
     case 'default':
       return directoryContent
-        .map(d => path.resolve(directory, d))
-        .filter(d => fs.statSync(d).isDirectory())
-        .map(d => path.basename(d));
+        .map((d) => path.resolve(directory, d))
+        .filter((d) => fs.statSync(d).isDirectory())
+        .map((d) => path.basename(d));
 
     case 'ngx-translate':
       return directoryContent
-        .filter(f => f.endsWith('.json'))
-        .map(f => f.slice(0, -5));
+        .filter((f) => f.endsWith('.json'))
+        .map((f) => f.slice(0, -5));
   }
-}
+};
 
 export const detectFileType = (json: any): FileType => {
   const invalidKeys = Object.keys(json).filter(
-    k => typeof json[k] === 'string' && (k.includes('.') || k.includes(' ')),
+    (k) => typeof json[k] === 'string' && (k.includes('.') || k.includes(' ')),
   );
 
   return invalidKeys.length > 0 ? 'natural' : 'key-based';
@@ -84,28 +94,28 @@ export const loadTranslations = (
   fileType: FileType = 'auto',
 ) =>
   fs
-  .readdirSync(directory)
-  .filter(f => f.endsWith('.json'))
-  .map(f => {
-    const json = require(path.resolve(directory, f));
-    const type = fileType === 'auto' ? detectFileType(json) : fileType;
+    .readdirSync(directory)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => {
+      const json = require(path.resolve(directory, f));
+      const type = fileType === 'auto' ? detectFileType(json) : fileType;
 
-    return {
-      name: f,
-      originalContent: json,
-      type,
-      content:
-        type === 'key-based'
-          ? flatten.convert(require(path.resolve(directory, f)))
-          : require(path.resolve(directory, f)),
-    } as TranslatableFile;
-  });
+      return {
+        name: f,
+        originalContent: json,
+        type,
+        content:
+          type === 'key-based'
+            ? flatten.convert(require(path.resolve(directory, f)))
+            : require(path.resolve(directory, f)),
+      } as TranslatableFile;
+    });
 
 export const fixSourceInconsistencies = (
   directory: string,
   cacheDir: string,
 ) => {
-  const files = loadTranslations(directory).filter(f => f.type === 'natural');
+  const files = loadTranslations(directory).filter((f) => f.type === 'natural');
 
   for (const file of files) {
     const fixedContent = Object.keys(file.content).reduce(
@@ -125,8 +135,11 @@ export const fixSourceInconsistencies = (
   }
 };
 
-export const evaluateFilePath =
-  (directory: string, dirStructure: DirectoryStructure, lang: string) => {
+export const evaluateFilePath = (
+  directory: string,
+  dirStructure: DirectoryStructure,
+  lang: string,
+) => {
   switch (dirStructure) {
     case 'default':
       return path.resolve(directory, lang);

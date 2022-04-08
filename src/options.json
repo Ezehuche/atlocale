@@ -7,5 +7,6 @@
     "fileType": "auto",
     "dirStructure": "default",
     "decodeEscapes": false,
-    "inputDir": "."
+    "inputDir": ".",
+    "fileFormat": ""
 }

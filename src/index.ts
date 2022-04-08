@@ -10,6 +10,7 @@ import { diff } from 'deep-object-diff';
 import ncp from 'ncp';
 import fse from 'fs-extra';
 import * as defaultOptions from './options.json';
+import { instantiateTFileFormat } from './file-formats';
 
 import { serviceMap, TranslationService } from './services';
 import {
@@ -21,6 +22,10 @@ import {
   DirectoryStructure,
   TranslatableFile,
   JSONValue,
+  TFileType,
+  TSet,
+  mapToObject,
+  stringifyJson,
 } from './util/file-system';
 import { matcherMap } from './matchers';
 
@@ -82,6 +87,14 @@ program
     '--decode-escapes',
     'decodes escaped HTML entities like &#39; into normal UTF-8 characters',
   )
+  .option(
+    '--file-format <yaml|po|xml|ios-strings|arb|csv>',
+    'the file format to use for the output files',
+  )
+  .option(
+    '--file-src <fileSrc>',
+    'the file source to be translated(this is only used for the --file-format option)',
+  )
   .parse(process.argv);
 
 const translate = async (
@@ -96,6 +109,9 @@ const translate = async (
   matcher: keyof typeof matcherMap,
   decodeEscapes = false,
   config?: string,
+  fileFormat?: TFileType,
+  fileSrc?: string,
+  sourceFile?: TranslatableFile,
 ) => {
   const resolvedCacheDir = path.resolve(process.cwd(), cacheDir);
   const localeDir = path.resolve(process.cwd(), resolvedCacheDir);
@@ -112,6 +128,8 @@ const translate = async (
   matcher = matcher || locales['matcher'] as keyof typeof matcherMap;
   config = config || locales['config'] as string ;
   decodeEscapes = decodeEscapes || locales['decodeEscapes'] as boolean;
+  fileFormat = fileFormat || locales['fileFormat'] as TFileType;
+  fileSrc = fileSrc || locales['fileSrc'] as string;
   console.log(inputDir);
   console.log(dirStructure);
   console.log(matcher);
@@ -137,6 +155,47 @@ const translate = async (
 
   if (typeof matcherMap[matcher] === 'undefined') {
     throw new Error(`The matcher ${matcher} doesn't exist.`);
+  }
+
+  if (fileFormat && !fileSrc) {
+    throw new Error(`The file source is required for the ${fileFormat} format.`);
+  }
+
+  if (fileFormat && fileSrc !== '') {
+    if (!fs.existsSync(fileSrc)) {
+      throw new Error(`The file source ${fileSrc} doesn't exist.`);
+    }
+    const Format = await instantiateTFileFormat(fileFormat);
+    const tSet: TSet = await Format.readTFile({
+      path: fileSrc,
+      lng: sourceLang,
+      format: fileFormat,
+      keySearch: "x",
+      keyReplace: "x",
+    });
+    const tSetObj = Array.from(tSet).reduce((obj, [key, value]) => (
+      Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
+    ), {});
+    const translatedFile = {
+      ...tSetObj,
+    };
+
+    const newContent =
+      JSON.stringify(
+        fileType === 'key-based'
+          ? flatten.undo(translatedFile)
+          : translatedFile,
+        null,
+        2,
+      ) + `\n`;
+
+    fs.writeFileSync(
+      path.resolve(
+        evaluateFilePath(workingDir, dirStructure, sourceLang),
+        sourceFile ? sourceFile.name : '',
+      ),
+      newContent,
+    );
   }
 
   const translationService = serviceMap[service];
