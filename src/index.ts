@@ -24,8 +24,7 @@ import {
   JSONValue,
   TFileType,
   TSet,
-  mapToObject,
-  stringifyJson,
+  checkDupKeys,
 } from './util/file-system';
 import { matcherMap } from './matchers';
 
@@ -161,6 +160,22 @@ const translate = async (
     throw new Error(`The file source is required for the ${fileFormat} format.`);
   }
 
+  const translationService = serviceMap[service];
+
+  const templateFilePath = evaluateFilePath(
+    workingDir,
+    dirStructure,
+    sourceLang,
+  );
+
+  const templateFiles = loadTranslations(templateFilePath, fileType);
+
+  if (templateFiles.length === 0) {
+    throw new Error(
+      `The source language ${sourceLang} doesn't contain any JSON files.`,
+    );
+  }
+
   if (fileFormat && fileSrc !== '') {
     if (!fs.existsSync(fileSrc)) {
       throw new Error(`The file source ${fileSrc} doesn't exist.`);
@@ -176,41 +191,24 @@ const translate = async (
     const tSetObj = Array.from(tSet).reduce((obj, [key, value]) => (
       Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
     ), {});
-    const translatedFile = {
-      ...tSetObj,
-    };
+
+    const templateFile = checkDupKeys(tSetObj, templateFiles[0].content);
 
     const newContent =
       JSON.stringify(
         fileType === 'key-based'
-          ? flatten.undo(translatedFile)
-          : translatedFile,
+          ? flatten.undo(templateFile)
+          : templateFile,
         null,
         2,
       ) + `\n`;
 
     fs.writeFileSync(
       path.resolve(
-        evaluateFilePath(workingDir, dirStructure, sourceLang),
-        sourceFile ? sourceFile.name : '',
+        templateFilePath,
+        templateFiles[0] ? templateFiles[0].name : '',
       ),
       newContent,
-    );
-  }
-
-  const translationService = serviceMap[service];
-
-  const templateFilePath = evaluateFilePath(
-    workingDir,
-    dirStructure,
-    sourceLang,
-  );
-
-  const templateFiles = loadTranslations(templateFilePath, fileType);
-
-  if (templateFiles.length === 0) {
-    throw new Error(
-      `The source language ${sourceLang} doesn't contain any JSON files.`,
     );
   }
 

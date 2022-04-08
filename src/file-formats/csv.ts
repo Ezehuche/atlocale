@@ -17,13 +17,14 @@ interface CsvStruct {
   contentLines: string[];
 }
 
-function insertCsvCache(filePath: string) {
+function insertCsvCache(filePath: string, lines: string[]) {
   const cacheDir = path.resolve(process.cwd(), '.atlocale/csv');
   const fileName = filePath.replace(/^.*[\\\/]/, '');
+  const csv: string = lines.join('\n');
   if (!fs.existsSync(cacheDir)) {
     fs.mkdirSync(cacheDir);
 
-    fs.writeFileSync(`${cacheDir}/${fileName}`, filePath);
+    fs.writeFileSync(`${cacheDir}/${fileName}`, csv);
     console.log(`🗂 Created CSV cache directory.`);
   }
 }
@@ -112,7 +113,7 @@ function parseCsvStruct(args: {
 
 export class SimpleCsv implements TFileFormat {
   readTFile(args: ReadTFileArgs): Promise<TSet> {
-    insertCsvCache(args.path);
+    // insertCsvCache(args.path);
     const utf8 = fs.readFileSync(args.path, { encoding: 'utf8', flag: 'r' });
     const csvStruct = parseCsvStruct({ utf8, args });
 
@@ -138,18 +139,27 @@ export class SimpleCsv implements TFileFormat {
     console.log(
       "Warning: Currently, 'atlocale' may overwrite pre-existing CSV-content. This might change in future versions.",
     );
+    const cacheFile = getCsvCache(args.path);
     const lines: string[] = [];
     const header: string = ['keys', args.lng].join(CSV_SEPARATOR);
     lines.push(header);
     args.tSet.forEach((value, key) => {
       const cache = checkCsvCache(key, args.path);
+      lines.push([key, value].join(CSV_SEPARATOR));
       if (!cache) {
-        lines.push([key, value].join(CSV_SEPARATOR));
         updateCsvCache(args.path, lines);
+      } else {
+        insertCsvCache(args.path, lines);
+        console.log(`🗂 Found key in cache.`);
       }
     });
     const csv: string = lines.join('\n');
-    // fs.writeFileSync(args.path, csv, { encoding: "utf8" });
-    fs.appendFileSync(args.path, csv, { encoding: 'utf8' });
+    if (!cacheFile) {
+        fs.writeFileSync(args.path, csv, { encoding: 'utf8' });
+        console.log(`🗂 Created CSV file.`);
+    } else {
+        fs.appendFileSync(args.path, csv, { encoding: 'utf8' });
+        console.log(`🗂 Updated CSV file.`);
+    }
   }
 }

@@ -111,6 +111,20 @@ export const loadTranslations = (
       } as TranslatableFile;
     });
 
+export const checkDupKeys = (
+  srcObject: object,
+  targetObject: object,
+) => {
+  const srcKeys = Object.keys(srcObject);
+  const targetKeys = Object.keys(targetObject);
+  srcKeys.forEach((k) => {
+    if (targetKeys.includes(k)) {
+      delete srcObject[k];
+    };
+  });
+  return srcObject;
+};
+
 export const fixSourceInconsistencies = (
   directory: string,
   cacheDir: string,

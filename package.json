@@ -11,8 +11,7 @@
     "prepublishOnly": "tsc"
   },
   "author": {
-    "name": "Ezeokeke Uchenna",
-    "url": "https://leolabs.org"
+    "name": "Ezeokeke Uche"
   },
   "keywords": [
     "google-translate",
@@ -23,9 +22,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/leolabs/json-autotranslate.git"
+    "url": "https://github.com/Ezehuche/localejs.git"
   },
-  "homepage": "https://github.com/leolabs/json-autotranslate",
+  "homepage": "https://github.com/Ezehuche/localejs",
   "files": [
     "lib/*"
   ],
