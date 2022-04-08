@@ -9,6 +9,7 @@ import * as path from 'path';
 import { diff } from 'deep-object-diff';
 import ncp from 'ncp';
 import fse from 'fs-extra';
+import * as defaultOptions from './options.json';
 
 import { serviceMap, TranslationService } from './services';
 import {
@@ -100,8 +101,8 @@ const translate = async (
   const localeDir = path.resolve(process.cwd(), resolvedCacheDir);
   let locales: JSONValue = {};
 
-  if (fs.existsSync(`${localeDir}/locales.json`)) {
-    locales = fse.readJsonSync(`${localeDir}/locales.json`);
+  if (fs.existsSync(`${localeDir}/config.json`)) {
+    locales = fse.readJsonSync(`${localeDir}/config.json`);
   }
   inputDir = inputDir || locales['inputDir'];
   dirStructure = dirStructure || locales['dirStructure'] as DirectoryStructure;
@@ -120,19 +121,9 @@ const translate = async (
 
   if (!fs.existsSync(resolvedCacheDir)) {
     fs.mkdirSync(resolvedCacheDir);
-    const obj = {
-      'sourceLang': 'en',
-      'targetLangs': [],
-      'service': 'google-translate',
-      'matcher': 'icu',
-      'config': '',
-      'fileType': 'auto',
-      'dirStructure': 'default',
-      'decodeEscapes': false,
-    };
-    const json = JSON.stringify(obj, null, 2) + '\n';
+    const json = JSON.stringify(defaultOptions, null, 2) + '\n';
 
-    fs.writeFileSync(`${localeDir}/locales.json`, json);
+    fs.writeFileSync(`${localeDir}/config.json`, json);
     console.log(`🗂 Created the cache directory.`);
   }
 

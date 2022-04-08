@@ -6,11 +6,44 @@ export type FileType = 'key-based' | 'natural' | 'auto';
 
 export type DirectoryStructure = 'default' | 'ngx-translate';
 
+export type TSet = Map<string, string | null>;
+
 export interface TranslatableFile {
   name: string,
   originalContent: string,
   type: FileType,
   content: object,
+}
+
+const fileFormatMap = {
+  yaml: null,
+  po: null,
+  xml: null,
+  "ios-strings": null,
+  arb: null,
+  csv: null,
+};
+
+export type TFileType = keyof typeof fileFormatMap;
+
+export interface ReadTFileArgs {
+  path: string;
+  lng: string;
+  format: TFileType;
+  keySearch: string;
+  keyReplace: string;
+}
+
+export interface WriteTFileArgs {
+  path: string;
+  tSet: TSet;
+  lng: string;
+  format: TFileType;
+}
+
+export interface TFileFormat {
+  writeTFile: (args: WriteTFileArgs) => void;
+  readTFile: (args: ReadTFileArgs) => Promise<TSet>;
 }
 
 export type JSONValue =

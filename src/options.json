@@ -1,0 +1,11 @@
+{
+    "sourceLang": "en",
+    "targetLangs": [],
+    "service": "google-translate",
+    "matcher": "i18next",
+    "config": "",
+    "fileType": "auto",
+    "dirStructure": "default",
+    "decodeEscapes": false,
+    "inputDir": "."
+}
