@@ -9,7 +9,7 @@ import * as path from 'path';
 import { diff } from 'deep-object-diff';
 import ncp from 'ncp';
 import fse from 'fs-extra';
-import * as defaultOptions from './options.json';
+import * as option from './options.json';
 import { instantiateTFileFormat } from './file-formats';
 
 import { serviceMap, TranslationService } from './services';
@@ -97,7 +97,7 @@ program
   .parse(process.argv);
 
 const translate = async (
-  inputDir: string,
+  inputDir: string = '.',
   cacheDir: string = '.atlocale',
   sourceLang: string,
   deleteUnusedStrings = false,
@@ -114,6 +114,15 @@ const translate = async (
 ) => {
   const resolvedCacheDir = path.resolve(process.cwd(), cacheDir);
   const localeDir = path.resolve(process.cwd(), resolvedCacheDir);
+  
+  if (!fs.existsSync(resolvedCacheDir)) {
+    fs.mkdirSync(resolvedCacheDir);
+    console.log(option);
+    const json = JSON.stringify(option, null, 2) + '\n';
+
+    fs.writeFileSync(`${localeDir}/config.json`, json);
+    console.log(`🗂 Created the cache directory.`);
+  }
   let locales: JSONValue = {};
 
   if (fs.existsSync(`${localeDir}/config.json`)) {
@@ -129,20 +138,13 @@ const translate = async (
   decodeEscapes = decodeEscapes || locales['decodeEscapes'] as boolean;
   fileFormat = fileFormat || locales['fileFormat'] as TFileType;
   fileSrc = fileSrc || locales['fileSrc'] as string;
+
   console.log(inputDir);
   console.log(dirStructure);
   console.log(matcher);
   const workingDir = path.resolve(process.cwd(), inputDir);
   const availableLanguages = getAvailableLanguages(workingDir, dirStructure);
   const targetLanguages = availableLanguages.filter((f) => f !== sourceLang);
-
-  if (!fs.existsSync(resolvedCacheDir)) {
-    fs.mkdirSync(resolvedCacheDir);
-    const json = JSON.stringify(defaultOptions, null, 2) + '\n';
-
-    fs.writeFileSync(`${localeDir}/config.json`, json);
-    console.log(`🗂 Created the cache directory.`);
-  }
 
   if (!availableLanguages.includes(sourceLang)) {
     throw new Error(`The source language ${sourceLang} doesn't exist.`);
