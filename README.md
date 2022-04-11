@@ -1,4 +1,4 @@
-# json-autotranslate
+# atlocale
 
 This tool allows you to translate a locale folder containing multiple JSON files
 into multiple languages using Google Translate, DeepL (free/pro), Azure
@@ -17,17 +17,17 @@ so their structure doesn't get mangled by the translation.
 ## Installation
 
 ```shell
-$ yarn add json-autotranslate
+$ yarn add atlocale
 # or
-$ npm i -S json-autotranslate
+$ npm i -S atlocale
 ```
 
-## Running json-autotranslate
+## Running atlocale
 
 ```shell
-$ yarn json-autotranslate
+$ yarn atlocale
 # or
-$ npx json-autotranslate
+$ npx atlocale
 ```
 
 ### Usage Examples
@@ -37,13 +37,13 @@ Google Translate and delete existing keys in translated JSON files that are no
 longer used.
 
 ```shell
-$ yarn json-autotranslate -i locales -d -c service-account.json
+$ yarn atlocale -i locales -d -c service-account.json
 ```
 
 Manually translate key-based source files located in the `locales` directory.
 
 ```shell
-$ yarn json-autotranslate -i locales -s manual
+$ yarn atlocale -i locales -s manual
 ```
 
 ## Directory Structure
@@ -84,12 +84,12 @@ contain JSON files. Sub-directories and other files will be ignored.
 
 ## File Structure
 
-There are two ways that json-autotranslate can interpret files:
+There are two ways that atlocale can interpret files:
 
 - Natural Language (`natural`)
 - Key-Based (`key-based`)
 
-If you don't specify a file structure type, json-autotranslate will
+If you don't specify a file structure type, atlocale will
 automatically determine the type on a per-file basis. In most cases, this is
 sufficient.
 
@@ -127,7 +127,7 @@ structure will be transferred over to the translated files as well.
 
 ## Available Services
 
-As of this release, json-autotranslate offers five services:
+As of this release, atlocale offers five services:
 
 - **google-translate** (default, uses
   [Google Translate](https://translate.google.com) to translate strings)
@@ -144,7 +144,7 @@ As of this release, json-autotranslate offers five services:
   touching any files)
 
 You can select a service using the `-s` or `--service` option. If you specify
-the `--list-services` flag, json-autotranslate will output a list of all
+the `--list-services` flag, atlocale will output a list of all
 available services.
 
 ### Google Translate
@@ -179,7 +179,7 @@ translated characters.
 DeepL Free is limited to 500,000 characters translated per month.
 
 After you have completed your sign-up, you can pass the API key to
-json-autotranslate using the `-c` or `--config` option.
+atlocale using the `-c` or `--config` option.
 
 You can also provide a formality by adding it to the config string after the API
 key, separated by a comma: `--config apiKey,formality`. This feature currently
@@ -198,7 +198,7 @@ To use this tool with Azure's Translator Text, you need to obtain an API key
 from their website. [Sign Up](https://azure.microsoft.com/en-us/free/) for an
 Azure account if you don't have one already and
 [create a new translator instance](https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation).
-You'll get an API key soon after that which you can pass to json-autotranslate
+You'll get an API key soon after that which you can pass to atlocale
 using the `-c` or `--config` flag.
 
 You can also provide a region by adding it to the config string after the API
@@ -240,7 +240,7 @@ you'll have to pay \$10 per 1M characters that you translate.
 ```
 
 - [Configure your AWS user credentials](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html)
-  locally, or wherever you will be running json-autotranslate. There are many
+  locally, or wherever you will be running atlocale. There are many
   ways to do this, but it is best to use something like
   [shared credentials](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html).
   Hard coded credentials should not be used for anything beyond proof of
@@ -267,7 +267,7 @@ translate the source strings manually in the console.
 
 Matchers are used to replace interpolations with placeholders before they are
 sent to the translation service. This ensures that interpolations don't get
-scrambled in the process. As of this release, json-autotranslate offers four
+scrambled in the process. As of this release, atlocale offers four
 matchers for different styles of interpolation:
 
 - **icu** (default, matches [ICU MessageFormat](https://translate.google.com)
@@ -279,7 +279,7 @@ matchers for different styles of interpolation:
 - **none** (doesn't match any interpolations)
 
 You can select a matchers using the `-m` or `--matcher` option. If you specify
-the `--list-matchers` flag, json-autotranslate will output a list of all
+the `--list-matchers` flag, atlocale will output a list of all
 available matchers.
 
 ## Available Options

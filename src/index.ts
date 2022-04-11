@@ -9,7 +9,6 @@ import * as path from 'path';
 import { diff } from 'deep-object-diff';
 import ncp from 'ncp';
 import fse from 'fs-extra';
-import * as option from './options.json';
 import { instantiateTFileFormat } from './file-formats';
 
 import { serviceMap, TranslationService } from './services';
@@ -31,6 +30,19 @@ import { matcherMap } from './matchers';
 require('dotenv').config();
 const program = new Command();
 const options = program.opts();
+
+const option = {
+  "sourceLang": "en",
+  "targetLangs": [],
+  "service": "google-translate",
+  "matcher": "i18next",
+  "config": "",
+  "fileType": "auto",
+  "dirStructure": "default",
+  "decodeEscapes": false,
+  "inputDir": ".",
+  "fileFormat": ""
+}
 
 program
   .option(
@@ -97,7 +109,7 @@ program
   .parse(process.argv);
 
 const translate = async (
-  inputDir: string = '.',
+  inputDir: string,
   cacheDir: string = '.atlocale',
   sourceLang: string,
   deleteUnusedStrings = false,
@@ -114,7 +126,7 @@ const translate = async (
 ) => {
   const resolvedCacheDir = path.resolve(process.cwd(), cacheDir);
   const localeDir = path.resolve(process.cwd(), resolvedCacheDir);
-  
+
   if (!fs.existsSync(resolvedCacheDir)) {
     fs.mkdirSync(resolvedCacheDir);
     console.log(option);
