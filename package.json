@@ -22,9 +22,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ezehuche/localejs.git"
+    "url": "https://github.com/Ezehuche/atlocale.git"
   },
-  "homepage": "https://github.com/Ezehuche/localejs",
+  "homepage": "https://github.com/Ezehuche/atlocale",
   "files": [
     "lib/*"
   ],
