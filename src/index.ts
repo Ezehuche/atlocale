@@ -41,7 +41,8 @@ const option = {
   "dirStructure": "default",
   "decodeEscapes": false,
   "inputDir": ".",
-  "fileFormat": ""
+  "fileFormat": "",
+  "fileSrc": ""
 }
 
 program

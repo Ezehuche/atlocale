@@ -1,7 +1,7 @@
 {
   "name": "atlocale",
-  "description": "Translate a folder of JSON files containing translations into multiple languages.",
-  "version": "1.0.0",
+  "description": "Translate a folder of JSON files containing translations or a CSV file into multiple languages.",
+  "version": "1.1.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
